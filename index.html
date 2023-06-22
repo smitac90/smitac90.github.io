@@ -161,7 +161,7 @@
       + '&utm_campaign=' + utm_campaign;
 
     // Remove spaces, quotation marks, commas, and apostrophes from the URL
-    result = result.replace(/[\s,"'!?]/g, '');
+    result = result.replace(/[\s,"'!]/g, '');
 
     if(media_channel === 'facebook') {
       document.getElementById('result').innerHTML = "Please use dynamic link structure from existing facebook campaigns";
