@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>AQV Link Generator with UTM Codes</h2>
+
+<form id="myForm">
+  <label for="base_url">Base URL:</label><br>
+  <textarea id="base_url" name="base_url" rows="4" cols="50"></textarea><br>
+  <label for="media_channel">Media Channel:</label><br>
+  <select id="media_channel" name="media_channel" onchange="setUtm()" style="width: 300px;">
+    <option value="none">None</option>
+    <option value="paid_search_google">Paid Search (Google)</option>
+    <option value="paid_search_bing">Paid Search (Bing)</option>
+    <option value="display_dv360">Display (DV360)</option>
+    <option value="email">Email</option>
+    <option value="facebook">Facebook</option>
+    <option value="garden_gun">Garden & Gun</option>
+  </select><br>
+
+  <!-- Email-specific fields -->
+  <div id="email_fields" style="display: none;">
+    <label for="email_subject">Email Subject:</label><br>
+    <input type="text" id="email_subject" name="email_subject" style="width: 300px;"><br>
+    <label for="target_audience">Target Audience:</label><br>
+    <select id="target_audience" name="target_audience" style="width: 300px;">
+      <option value="Prospects">Prospects</option>
+      <option value="Agent">Agent</option>
+      <option value="Past_Guest">Past Guest</option>
+    </select><br>
+    <label for="itinerary">Itinerary:</label><br>
+    <select id="itinerary" name="itinerary" style="width: 300px;">
+      <option value="Rivers">Rivers</option>
+      <option value="Lakes">Lakes</option>
+      <option value="Oceans">Oceans</option>
+      <option value="Expedition">Expedition</option>
+    </select><br>
+    <label for="send_date">Send Date:</label><br>
+    <input type="date" id="send_date" name="send_date"><br>
+  </div>
+
+  <!-- Paid Search-specific fields -->
+  <div id="paid_search_fields" style="display: none;">
+    <label for="audience">Audience:</label><br>
+    <input type="text" id="audience" name="audience" style="width: 300px;"><br>
+    <label for="search_terms">Search Terms:</label><br>
+    <input type="text" id="search_terms" name="search_terms" style="width: 300px;"><br>
+    <label for="campaign">Campaign:</label><br>
+    <input type="text" id="campaign" name="campaign" style="width: 300px;"><br>
+  </div>
+
+  <!-- Display (DV360)-specific fields -->
+  <div id="display_dv360_fields" style="display: none;">
+    <label for="dv360_audience">Audience:</label><br>
+    <select id="dv360_audience" name="dv360_audience" style="width: 300px;">
+      <option value="2023-AQV-Prospecting">Prospecting</option>
+      <option value="2023-AQV-Retargeting">Retargeting</option>
+    </select><br>
+  </div>
+
+  <label for="utm_source">UTM Source:</label><br>
+  <input type="text" id="utm_source" name="utm_source" readonly style="width: 300px;"><br>
+  <label for="utm_medium">UTM Medium:</label><br>
+  <input type="text" id="utm_medium" name="utm_medium" readonly style="width: 300px;"><br>
+  <label for="utm_campaign">UTM Campaign:</label><br>
+  <input type="text" id="utm_campaign" name="utm_campaign" readonly style="width: 300px;"><br>
+</form> 
+
+<p id="result"></p>
+
+<input type="button" value="Generate Link" onclick="generateLink()">
+<input type="button" value="Copy Link" onclick="copyLink()">
+
+<script>
+  function setUtm() {
+    var media_channel = document.getElementById('media_channel').value;
+
+    switch(media_channel) {
+      case 'none':
+        document.getElementById('utm_source').value = '';
+        document.getElementById('utm_medium').value = '';
+        document.getElementById('utm_campaign').value = '';
+        break;
+      case 'paid_search_google':
+        document.getElementById('utm_source').value = 'google';
+        document.getElementById('utm_medium').value = 'cpc';
+        document.getElementById('utm_campaign').value = '';
+        break;
+      case 'paid_search_bing':
+        document.getElementById('utm_source').value = 'bing';
+        document.getElementById('utm_medium').value = 'cpc';
+        document.getElementById('utm_campaign').value = '';
+        break;
+      case 'display_dv360':
+        document.getElementById('utm_source').value = 'dv360';
+        document.getElementById('utm_medium').value = 'display';
+        document.getElementById('utm_campaign').value = '';
+        break;
+      case 'email':
+        document.getElementById('utm_source').value = 'sfmc';
+        document.getElementById('utm_medium').value = 'email';
+        document.getElementById('utm_campaign').value = '';
+        break;
+      case 'facebook':
+        document.getElementById('utm_source').value = 'social';
+        document.getElementById('utm_medium').value = 'facebook';
+        document.getElementById('utm_campaign').value = '';
+        break;
+      case 'garden_gun':
+        document.getElementById('utm_source').value = 'gardenandgun';
+        document.getElementById('utm_medium').value = 'display';
+        document.getElementById('utm_campaign').value = '';
+        break;
+    }
+
+    // Toggle visibility of additional fields based on the selected media channel
+    document.getElementById('email_fields').style.display = (media_channel === 'email') ? 'block' : 'none';
+    document.getElementById('paid_search_fields').style.display = (media_channel.startsWith('paid_search')) ? 'block' : 'none';
+    document.getElementById('display_dv360_fields').style.display = (media_channel === 'display_dv360') ? 'block' : 'none';
+  }
+
+  function generateLink() {
+    var base_url = document.getElementById('base_url').value;
+    var media_channel = document.getElementById('media_channel').value;
+    var utm_source = document.getElementById('utm_source').value;
+    var utm_medium = document.getElementById('utm_medium').value;
+    var utm_campaign = '';
+
+    switch(media_channel) {
+      case 'none':
+        break;
+      case 'paid_search_google':
+      case 'paid_search_bing':
+        var audience = document.getElementById('audience').value;
+        var search_terms = document.getElementById('search_terms').value;
+        var campaign = document.getElementById('campaign').value;
+        utm_campaign = 'AQS_NA_' + utm_source.toUpperCase() + '_NA_' + audience + '_' + search_terms + '_SEM_CPC_Text-Link_USA_Consumer_' + campaign + '_NA';
+        break;
+      case 'display_dv360':
+        utm_campaign = document.getElementById('dv360_audience').value;
+        break;
+      case 'email':
+        var email_subject = document.getElementById('email_subject').value;
+        var target_audience = document.getElementById('target_audience').value;
+        var itinerary = document.getElementById('itinerary').value;
+        var send_date = new Date(document.getElementById('send_date').value);
+        send_date = ('0' + (send_date.getMonth() + 1)).slice(-2) + '.' + ('0' + send_date.getDate()).slice(-2) + '.' + send_date.getFullYear();
+        utm_campaign = 'AQV_ListEmails_' + email_subject + '_' + target_audience + '_' + itinerary + '_' + send_date;
+        break;
+      case 'facebook':
+        break;
+      case 'garden_gun':
+        break;
+    }
+
+    document.getElementById('utm_campaign').value = utm_campaign;
+
+    var result = base_url 
+      + '?utm_source=' + utm_source
+      + '&utm_medium=' + utm_medium
+      + '&utm_campaign=' + utm_campaign;
+
+    // Remove spaces, quotation marks, commas, and apostrophes from the URL
+    result = result.replace(/[\s,"'!?]/g, '');
+
+    if(media_channel === 'facebook') {
+      document.getElementById('result').innerHTML = "Please use dynamic link structure from existing facebook campaigns";
+    } else {
+      document.getElementById('result').innerHTML = result;
+    }
+  }
+
+  function copyLink() {
+    var copyText = document.getElementById("result").innerHTML;
+    var textarea = document.createElement("textarea");
+    textarea.textContent = copyText;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+  }
+</script>
+
+</body>
+</html>
